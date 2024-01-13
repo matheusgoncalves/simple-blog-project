@@ -6,9 +6,12 @@ const postsContainer = document.querySelector("#posts-container");
 
 const urlSearchParams = new URLSearchParams(window.location.search);
 const postId = urlSearchParams.get("id");
+
+const postPage = document.querySelector("#post");
+const postContainer = document.querySelector("#post-container");
+const commentsContainer = document.querySelector("#comments-container");
+
 // Funções
-
-
 getAllPosts = async () => {
     const response = await fetch(url);
 
@@ -39,8 +42,23 @@ getAllPosts = async () => {
     });
 }
 
+getPost = async (id) => {
+    const [responsePost, responseComments] = await Promise.all([
+        fetch(`${url}/${id}`),
+        fetch(`${url}${id}/comments`)
+    ]);
+
+    const dataPost = await responsePost.json();
+
+    const dataComments = await responseComments.json();
+
+    loadingEl.classList.add("hide");
+    postPage.classList.remove("hide");
+}
+
+// Chamada de funções
 if(!postId) {
     getAllPosts();
 } else {
-    console.log(postId);
+    getPost(postId);
 }
