@@ -4,20 +4,24 @@ const url = "https://jsonplaceholder.typicode.com/posts";
 const loadingEl = document.querySelector("#loading");
 const postsContainer = document.querySelector("#posts-container");
 
-const urlSearchParams = new URLSearchParams(window.location.search);
+const urlSearchParams = new URLSearchParams(window.location.search); // Pega a query string da URL
 const postId = urlSearchParams.get("id");
 
 const postPage = document.querySelector("#post");
 const postContainer = document.querySelector("#post-container");
-const commentsContainer = document.querySelector("#comments-container"); 
+const commentsContainer = document.querySelector("#comments-container");
+
+const commentForm = document.querySelector("#comment-form");
+const emailInput = document.querySelector("#email");
+const bodyInput = document.querySelector("#body");
 
 // Funções
 getAllPosts = async () => {
-    const response = await fetch(url);
+    const response = await fetch(url); // Faz a requisição e aguarda a resposta
 
     console.log(response);
 
-    const data = await response.json();
+    const data = await response.json(); // Transforma a resposta em um objeto 
 
     console.log(data);
 
@@ -43,7 +47,7 @@ getAllPosts = async () => {
 }
 
 getPost = async (id) => {
-    const [responsePost, responseComments] = await Promise.all([
+    const [responsePost, responseComments] = await Promise.all([ // Faz as duas requisições ao mesmo tempo
         fetch(`${url}/${id}`),
         fetch(`${url}/${id}/comments`)
     ]);
@@ -66,9 +70,9 @@ getPost = async (id) => {
 
     console.log(dataComments);
 
-    dataComments.map((comment) => {
+    dataComments.map((comment) => { // Percorre o array de comentários e cria um comentário para cada item
         createComment(comment);
-    })
+    });
 }
 
 createComment = (comment) => {
@@ -85,9 +89,37 @@ createComment = (comment) => {
     commentsContainer.appendChild(div);
 }
 
-// Chamada de funções
+postComment = async (comment) => {
+    const response = await fetch(`${url}/${postId}/comments`, {
+        method: "POST", // Método da requisição
+        body: comment, // Envia o comentário
+        headers: {
+            "Content-type": "application/json", // Informa que o conteúdo é um JSON
+        },
+    });
+
+    const data = await response.json();
+
+    createComment(data);
+}
+
+// Chamada de funções e eventos
 if(!postId) {
     getAllPosts();
 } else {
     getPost(postId);
+
+    // Eventos
+    commentForm.addEventListener("submit", (e) => {
+        e.preventDefault(); // Previne o comportamento padrão do formulário
+
+        let comment = {
+            email: emailInput.value,
+            body: bodyInput.value,
+        }
+
+        comment = JSON.stringify(comment); // Transforma o objeto em uma string
+
+        postComment(comment);
+    });
 }
