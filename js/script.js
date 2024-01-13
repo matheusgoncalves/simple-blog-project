@@ -4,7 +4,11 @@ const url = "https://jsonplaceholder.typicode.com/posts";
 const loadingEl = document.querySelector("#loading");
 const postsContainer = document.querySelector("#posts-container");
 
+const urlSearchParams = new URLSearchParams(window.location.search);
+const postId = urlSearchParams.get("id");
 // Funções
+
+
 getAllPosts = async () => {
     const response = await fetch(url);
 
@@ -35,4 +39,8 @@ getAllPosts = async () => {
     });
 }
 
-getAllPosts();
+if(!postId) {
+    getAllPosts();
+} else {
+    console.log(postId);
+}
