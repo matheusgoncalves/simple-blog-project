@@ -9,7 +9,7 @@ const postId = urlSearchParams.get("id");
 
 const postPage = document.querySelector("#post");
 const postContainer = document.querySelector("#post-container");
-const commentsContainer = document.querySelector("#comments-container");
+const commentsContainer = document.querySelector("#comments-container"); 
 
 // Funções
 getAllPosts = async () => {
@@ -45,7 +45,7 @@ getAllPosts = async () => {
 getPost = async (id) => {
     const [responsePost, responseComments] = await Promise.all([
         fetch(`${url}/${id}`),
-        fetch(`${url}${id}/comments`)
+        fetch(`${url}/${id}/comments`)
     ]);
 
     const dataPost = await responsePost.json();
@@ -54,6 +54,35 @@ getPost = async (id) => {
 
     loadingEl.classList.add("hide");
     postPage.classList.remove("hide");
+
+    const title = document.createElement("h1");
+    const body = document.createElement("p");
+
+    title.innerText = dataPost.title;
+    body.innerText = dataPost.body;
+
+    postContainer.appendChild(title);
+    postContainer.appendChild(body);
+
+    console.log(dataComments);
+
+    dataComments.map((comment) => {
+        createComment(comment);
+    })
+}
+
+createComment = (comment) => {
+    const div = document.createElement("div");
+    const email = document.createElement("h3");
+    const commentBody = document.createElement("p");
+
+    email.innerText = comment.email;
+    commentBody.innerText = comment.body;
+
+    div.appendChild(email);
+    div.appendChild(commentBody);
+
+    commentsContainer.appendChild(div);
 }
 
 // Chamada de funções
